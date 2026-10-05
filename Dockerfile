@@ -1,5 +1,11 @@
 FROM nousresearch/hermes-agent:v2026.8.3@sha256:16788311e2fa3035456bdc1bafb8ec2b1777db64ebf020af9bb7eb73c3712c9e
 
+USER root
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nano \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/hermes-railway-entrypoint
 
 ENV HERMES_HOME=/data/.hermes \
