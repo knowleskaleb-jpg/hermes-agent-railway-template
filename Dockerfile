@@ -15,5 +15,7 @@ ENV HERMES_HOME=/data/.hermes \
     HERMES_DASHBOARD_HOST=0.0.0.0 \
     HERMES_GATEWAY_BOOTSTRAP_STATE=running
 
+WORKDIR /data/.hermes
+
 ENTRYPOINT ["/usr/local/bin/hermes-railway-entrypoint"]
 CMD ["gateway", "run"]
