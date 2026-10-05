@@ -22,4 +22,25 @@ export HERMES_DASHBOARD_BASIC_AUTH_USERNAME="$dashboard_username"
 export HERMES_DASHBOARD_BASIC_AUTH_PASSWORD="$dashboard_password"
 export HERMES_DASHBOARD_BASIC_AUTH_SECRET="$dashboard_secret"
 
+# Configure GitHub authentication at container startup.
+# GITHUB_TOKEN must be configured as a Railway secret variable.
+if [ -n "${GITHUB_TOKEN:-}" ]; then
+    if ! command -v git >/dev/null 2>&1; then
+        echo "GITHUB_TOKEN is set, but git is not installed." >&2
+        exit 1
+    fi
+
+    if [ ! -x /usr/local/bin/github-askpass ]; then
+        echo "github-askpass helper is missing or not executable." >&2
+        exit 1
+    fi
+
+    export GIT_ASKPASS=/usr/local/bin/github-askpass
+    export GIT_TERMINAL_PROMPT=0
+
+    # Keep Git configuration persistent, but never store the token itself.
+    export GIT_CONFIG_GLOBAL="${GIT_CONFIG_GLOBAL:-${HERMES_HOME:-/data/.hermes}/gitconfig}"
+    git config --global credential.helper ""
+fi
+
 exec /opt/hermes/docker/entrypoint-dispatch.sh "$@"
