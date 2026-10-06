@@ -8,7 +8,7 @@ RUN apt-get update \
 
 COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/hermes-railway-entrypoint
 
-COPY --chmod=0755 github-askpass /usr/local/bin/github-askpass
+COPY --chmod=0755 github-askpass /usr/local/bin/github-askpass.sh
 
 ENV HERMES_HOME=/data/.hermes \
     HERMES_WRITE_SAFE_ROOT=/data/.hermes \
