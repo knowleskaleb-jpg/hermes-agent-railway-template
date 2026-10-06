@@ -15,7 +15,10 @@ ENV HERMES_HOME=/data/.hermes \
     HERMES_LAZY_INSTALL_TARGET=/data/.hermes/lazy-packages \
     HERMES_DASHBOARD=1 \
     HERMES_DASHBOARD_HOST=0.0.0.0 \
-    HERMES_GATEWAY_BOOTSTRAP_STATE=running
+    HERMES_GATEWAY_BOOTSTRAP_STATE=running \
+    GIT_ASKPASS=/usr/local/bin/github-askpass \
+    GIT_TERMINAL_PROMPT=0 \
+    GIT_CONFIG_GLOBAL=/data/.hermes/gitconfig
 
 WORKDIR /data/.hermes
 
