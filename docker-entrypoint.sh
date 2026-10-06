@@ -22,6 +22,13 @@ export HERMES_DASHBOARD_BASIC_AUTH_USERNAME="$dashboard_username"
 export HERMES_DASHBOARD_BASIC_AUTH_PASSWORD="$dashboard_password"
 export HERMES_DASHBOARD_BASIC_AUTH_SECRET="$dashboard_secret"
 
+if command -v git >/dev/null 2>&1; then
+    mkdir -p "$(dirname "$GIT_CONFIG_GLOBAL")"
+
+    # Do not store the token in .git-credentials.
+    git config --global credential.helper ""
+fi
+
 # Configure GitHub authentication at container startup.
 # GITHUB_TOKEN must be configured as a Railway secret variable.
 if [ -n "${GITHUB_TOKEN:-}" ]; then
