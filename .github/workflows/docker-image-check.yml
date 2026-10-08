@@ -1,0 +1,49 @@
+name: Docker image check
+
+on:
+  pull_request:
+    paths:
+      - "Dockerfile"
+      - "docker-entrypoint.sh"
+      - "github-askpass.sh"
+      - "docker/**"
+      - "renovate.json"
+      - ".github/workflows/docker-image-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require a digest-pinned Hermes base image
+        run: |
+          set -euo pipefail
+          from_line="$(grep -E '^FROM nousresearch/hermes-agent:' Dockerfile)"
+          echo "Base image: ${from_line#FROM }"
+          if printf '%s\n' "$from_line" | grep -q ':latest'; then
+            echo "Refusing an unpinned latest tag."
+            exit 1
+          fi
+          if ! printf '%s\n' "$from_line" | grep -Eq '^FROM nousresearch/hermes-agent:[^[:space:]]+@sha256:[0-9a-f]{64}$'; then
+            echo "Dockerfile must pin nousresearch/hermes-agent with a full sha256 digest."
+            exit 1
+          fi
+
+      - name: Build image
+        run: docker build --pull -t hermes-railway-check:ci .
+
+      - name: Verify custom entrypoint files
+        run: |
+          set -euo pipefail
+          docker run --rm --entrypoint /bin/sh hermes-railway-check:ci -c '
+            test -x /usr/local/bin/hermes-railway-entrypoint
+            test -x /usr/local/bin/github-askpass
+            test -x /opt/hermes/docker/entrypoint-dispatch.sh
+            test -n "$HERMES_HOME"
+          '

@@ -55,6 +55,6 @@ Provider credentials, messaging channels, models, skills, profiles, and gateway 
 
 ## Upgrading Hermes
 
-Update the pinned release and digest in `Dockerfile` deliberately after reviewing the upstream [release notes](https://github.com/NousResearch/hermes-agent/releases) and validating the new image. Do not use `latest`. Because the template remains GitHub-backed, merging an upgrade to the default branch notifies existing template consumers.
+Renovate opens a pull request when a newer digest-pinned `nousresearch/hermes-agent` release is published. Review the upstream [release notes](https://github.com/NousResearch/hermes-agent/releases) and the Docker image check, then merge that pull request into `main`. Automerge is off, so Railway builds the new image only after the reviewed change lands on `main`. Do not use `latest`, and do not upgrade Hermes with `git pull` or package upgrades at container startup. Because the template remains GitHub-backed, merging an upgrade to the default branch notifies existing template consumers.
 
 See the official [Hermes Docker documentation](https://hermes-agent.nousresearch.com/docs/user-guide/docker) for image behavior and configuration details.

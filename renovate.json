@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests"
+  ],
+  "enabledManagers": [
+    "dockerfile"
+  ],
+  "prCreation": "immediate",
+  "prConcurrentLimit": 1,
+  "labels": [
+    "dependencies",
+    "hermes-update"
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "nousresearch/hermes-agent"
+      ],
+      "groupName": "Hermes Agent",
+      "automerge": false
+    }
+  ]
+}
