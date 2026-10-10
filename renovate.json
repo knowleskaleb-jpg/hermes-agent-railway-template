@@ -23,7 +23,8 @@
         "nousresearch/hermes-agent"
       ],
       "groupName": "Hermes Agent",
-      "automerge": false
+      "automerge": true,
+      "automergeType": "pr"
     }
   ]
 }
