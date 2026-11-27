@@ -50,4 +50,30 @@ if [ -n "${GITHUB_TOKEN:-}" ]; then
     git config --global credential.helper ""
 fi
 
+# Railway's V2 runtime starts this script as a child of its own init, so the
+# upstream dispatcher skips s6-overlay and the supervised dashboard never
+# starts (public URL returns 502). Start the dashboard ourselves in that case.
+if [ "$$" -ne 1 ]; then
+    case "${HERMES_DASHBOARD:-}" in
+        1|true|TRUE|True|yes|YES|Yes)
+            (
+                # Wait for the stage2 bootstrap (run by the dispatcher) to finish.
+                sleep 15
+                export PATH="/command:/package/admin/s6/command:${PATH}"
+                export HOME=/opt/data
+                cd /opt/data 2>/dev/null || cd /
+                while :; do
+                    if [ "$(id -u)" = 0 ]; then
+                        s6-setuidgid hermes hermes dashboard --host "${HERMES_DASHBOARD_HOST:-0.0.0.0}" --port "$HERMES_DASHBOARD_PORT" --no-open
+                    else
+                        hermes dashboard --host "${HERMES_DASHBOARD_HOST:-0.0.0.0}" --port "$HERMES_DASHBOARD_PORT" --no-open
+                    fi
+                    echo "[dashboard] exited; restarting in 5s" >&2
+                    sleep 5
+                done
+            ) &
+            ;;
+    esac
+fi
+
 exec /opt/hermes/docker/entrypoint-dispatch.sh "$@"
